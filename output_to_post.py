@@ -70,6 +70,7 @@ def replace_pic_open_path(filename,path_posts_file):
             line = line.replace("../InsertPic/", filename[:-3]+"/")
             #print(line)
         text.append(line)
+    text.insert(0, "---\n")
     writeback(path_posts_file,text)
     
 #
@@ -89,6 +90,7 @@ def replace_pic_path_text(filename,text):
         if(pic_line):
             line = line.replace("../InsertPic/", filename[:-3]+"/")
         tmp_text.append(line)
+    text.insert(0, "---\n")
     return tmp_text
 
 def copy_and_add_date(origin_path, post_path,filename):
@@ -120,12 +122,10 @@ def copy_and_add_date(origin_path, post_path,filename):
             replace_pic_open_path(filename, path_posts + filename)
 
             return
-        elif head_exist:
-            
+        else:
             for line in open(openfile, encoding='utf-8'):
                 text.append(line)
             text.insert(2, "date: " + create_date + '\n')
-            
         text = replace_pic_path_text(filename,text=text)
 
         writeback(post_path + filename,text)
