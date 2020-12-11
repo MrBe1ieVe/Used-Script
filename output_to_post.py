@@ -5,11 +5,12 @@ import shutil
 import hashlib
 import datetime
 from typing import Text
+import time
 
 path_py = os.path.dirname(os.path.abspath(__file__))
 path_py = os.path.normpath(path_py)
-path_output = path_py[:path_py.index("Used script")] + "/Note Vault/OutPut/test/"#path_py[:path_py.index("Used script")] + "/Note Vault/OutPut/"
-path_posts = path_py[:path_py.index("Used script")] + "/Blog/source/_test/" #path_py[:path_py.index(    "Used script")] + "/Blog/source/_posts/"  
+path_output = path_py[:path_py.index("Used script")] + "/Note Vault/OutPut/"#path_py[:path_py.index("Used script")] + "/Note Vault/OutPut/test/"#
+path_posts =path_py[:path_py.index(    "Used script")] + "/Blog/source/_posts/"  
 path_insertpic = path_py[:path_py.index(
     "Used script")] + "/Note Vault/InsertPic/"
 file_output_path = []
@@ -61,6 +62,9 @@ def compare_file_md5(origin_file, des_file):
 def replace_pic_open_path(filename,path_posts_file):
     text = []
     for line in open(path_posts_file, encoding='utf-8'):
+        # pass the obsidian Date: 
+        if(re.search("Date\: \[\[",line)):
+            continue
         pic_line = re.search("\!\[.*\]\(\.\.\/InsertPic\/.*\)", line)
         if(pic_line):
             line = line.replace("../InsertPic/", filename[:-3]+"/")
@@ -76,6 +80,10 @@ def replace_pic_path_text(filename,text):
     tmp_text = []
 
     for line in text:
+        # pass the obsidian Date: 
+
+        if(re.search("Date\: \[\[",line)):
+            continue
         # get the ![](../InsertPic/)
         pic_line = re.search("\!\[.*\]\(\.\.\/InsertPic\/.*\)", line)
         if(pic_line):
@@ -152,6 +160,7 @@ for root, dirnames, filenames in os.walk(path_output):
             continue
     for filename in pic_output_dic.keys():
         file_equal_flag = 0
+        print()
         print(filename)
         if(os.path.isfile(path_posts + filename)):  # if destination file exit
             file_equal_flag = compare_file_md5(
@@ -176,6 +185,7 @@ for root, dirnames, filenames in os.walk(path_output):
         print("Copyed!")
         print()
 
-print(path_py)
-print(path_output)
-print(file_output_path)
+print("Done!")
+time.sleep(2)
+os.system(('powershell.exe cd {} && hexo clean && hexo gen && hexo deploy').format(path_output))#cd {} && hexo clean && hexo gen && hexo deploy
+
