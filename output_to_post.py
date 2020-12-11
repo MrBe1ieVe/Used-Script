@@ -4,10 +4,11 @@ import re
 import shutil
 import hashlib
 import datetime
+from typing import Text
 
 path_py = os.path.dirname(os.path.abspath(__file__))
 path_py = os.path.normpath(path_py)
-path_output = path_py[:path_py.index("Used script")] + "/Note Vault/OutPut/"
+path_output = path_py[:path_py.index("Used script")] + "/Note Vault/OutPut/test/"#path_py[:path_py.index("Used script")] + "/Note Vault/OutPut/"
 path_posts = path_py[:path_py.index("Used script")] + "/Blog/source/_test/" #path_py[:path_py.index(    "Used script")] + "/Blog/source/_posts/"  
 path_insertpic = path_py[:path_py.index(
     "Used script")] + "/Note Vault/InsertPic/"
@@ -33,9 +34,9 @@ def shift_time(filename):
 # write back to the file
 
 
-def writeback(filename, text):
+def writeback(filepath, text):
     s = ''.join(text)
-    with open(filename, "w", encoding='utf-8',) as f:
+    with open(filepath, "w", encoding='utf-8',) as f:
         f.write(s)
 
 # compare md5
@@ -56,9 +57,31 @@ def compare_file_md5(origin_file, des_file):
         except:
             raise "ERROR"
 
-# untested
-def replace_pic_path():
-    pass
+# open des file and write to it
+def replace_pic_open_path(filename,path_posts_file):
+    text = []
+    for line in open(path_posts_file, encoding='utf-8'):
+        pic_line = re.search("\!\[.*\]\(\.\.\/InsertPic\/.*\)", line)
+        if(pic_line):
+            line = line.replace("../InsertPic/", filename[:-3]+"/")
+            #print(line)
+        text.append(line)
+    writeback(path_posts_file,text)
+    
+#
+#
+
+def replace_pic_path_text(filename,text):
+    #return replaced path text
+    tmp_text = []
+
+    for line in text:
+        # get the ![](../InsertPic/)
+        pic_line = re.search("\!\[.*\]\(\.\.\/InsertPic\/.*\)", line)
+        if(pic_line):
+            line = line.replace("../InsertPic/", filename[:-3]+"/")
+        tmp_text.append(line)
+    return tmp_text
 
 def copy_and_add_date(origin_path, post_path,filename):
     openfile = origin_path + filename
@@ -69,6 +92,7 @@ def copy_and_add_date(origin_path, post_path,filename):
         head_exist = False
         date_exist = False
         line_num = False
+        text = []
         create_date = shift_time(openfile)
         for line in open(openfile, encoding='utf-8'):
             line_num += 1
@@ -85,20 +109,19 @@ def copy_and_add_date(origin_path, post_path,filename):
                 break
         if date_exist:
             shutil.copy2(path_output+filename, path_posts + filename)
+            replace_pic_open_path(filename, path_posts + filename)
+
             return
         elif head_exist:
-            text = []
+            
             for line in open(openfile, encoding='utf-8'):
                 text.append(line)
-            text.insert(1, "date: " + create_date + '\n')
-            return
-        else:
-            text = []
-            for line in open(filename, encoding='utf-8'):
-                text.append(line)
-            text.insert(0, "---\ndate: " + create_date + '\n---\n')
-        # writeback(post_path + filename,text)
-            return
+            text.insert(2, "date: " + create_date + '\n')
+            
+        text = replace_pic_path_text(filename,text=text)
+
+        writeback(post_path + filename,text)
+        return
 
 
 for root, dirnames, filenames in os.walk(path_output):
@@ -144,7 +167,11 @@ for root, dirnames, filenames in os.walk(path_output):
             # mkdir the {filename} folder in order to make hexo publish my pic
             os.makedirs(file_pic_folder)
         for pic_name in pic_output_dic[filename]:
-            shutil.copy2(path_insertpic+pic_name, file_pic_folder+"/"+pic_name)
+            try:
+                shutil.copy2(path_insertpic+pic_name, file_pic_folder+"/"+pic_name)
+            except:
+                continue
+                #raise "copy pic error!"
             print(pic_name)
         print("Copyed!")
         print()
