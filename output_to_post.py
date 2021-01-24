@@ -6,6 +6,7 @@ import hashlib
 import datetime
 from typing import Text
 import time
+from urllib.parse import unquote
 
 path_py = os.path.dirname(os.path.abspath(__file__))
 path_py = os.path.normpath(path_py)
@@ -177,7 +178,7 @@ for root, dirnames, filenames in os.walk(path_output):
             os.makedirs(file_pic_folder)
         for pic_name in pic_output_dic[filename]:
             try:
-                shutil.copy2(path_insertpic+pic_name, file_pic_folder+"/"+pic_name)
+                shutil.copy2(path_insertpic+unquote(pic_name), file_pic_folder+"/"+unquote(pic_name))
             except:
                 continue
                 #raise "copy pic error!"
@@ -187,5 +188,5 @@ for root, dirnames, filenames in os.walk(path_output):
 
 print("Done!")
 time.sleep(2)
-os.system(('powershell.exe cd {} && hexo clean && hexo gen && hexo deploy').format(path_output))#cd {} && hexo clean && hexo gen && hexo deploy
+os.system(('cd {} && hexo clean && hexo gen && hexo deploy').format("\""+path_posts+"\""))#cd {} && hexo clean && hexo gen && hexo deploy
 
