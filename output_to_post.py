@@ -121,6 +121,7 @@ def copy_and_add_date(origin_path, post_path,filename):
         if date_exist:
             shutil.copy2(path_output+filename, path_posts + filename)
             replace_pic_open_path(filename, path_posts + filename)
+            print("Copyed!")
 
             return
         else:
@@ -141,7 +142,7 @@ for root, dirnames, filenames in os.walk(path_output):
                 file_output_path.append(os.path.join(root, filename))
                 # record the filepath that gonna move to _posts
                 file_output_name.append(filename)
-                break
+                #break
     # sync the pic_name and path,in order to put the pic_name and img_list in a dic
     for num in range(0, len(file_output_path)):
         tmp_pic_list = []
@@ -158,7 +159,8 @@ for root, dirnames, filenames in os.walk(path_output):
             # {filename: ['img1','img2']}
             pic_output_dic[file_output_name[num]] = tmp_pic_list
         else:
-            continue
+            pic_output_dic[file_output_name[num]] = ''
+            #continue
     for filename in pic_output_dic.keys():
         file_equal_flag = 0
         print()
@@ -171,19 +173,22 @@ for root, dirnames, filenames in os.walk(path_output):
         # copy the pic and md to the _posts
         #shutil.copy2(path_output+filename, path_posts + filename)
         copy_and_add_date(path_output, path_posts,filename)
-        #copy the pic to the _posts
-        file_pic_folder = path_posts+"/" + filename[:-3]
-        if not os.path.exists(file_pic_folder):
-            # mkdir the {filename} folder in order to make hexo publish my pic
-            os.makedirs(file_pic_folder)
-        for pic_name in pic_output_dic[filename]:
-            try:
-                shutil.copy2(path_insertpic+unquote(pic_name), file_pic_folder+"/"+unquote(pic_name))
-            except:
-                continue
-                #raise "copy pic error!"
+        if pic_output_dic[filename]:
+            #copy the pic to the _posts
+            file_pic_folder = path_posts+"/" + filename[:-3]
+            if not os.path.exists(file_pic_folder):
+                # mkdir the {filename} folder in order to make hexo publish my pic
+                os.makedirs(file_pic_folder)
+            for pic_name in pic_output_dic[filename]:
+                try:
+                    shutil.copy2(path_insertpic+unquote(pic_name), file_pic_folder+"/"+unquote(pic_name))
+                except:
+                    continue
+                    #raise "copy pic error!"
             print(pic_name)
-        print("Copyed!")
+            print("Copyed!")
+        else:
+            continue
         print()
 
 print("Done!")
