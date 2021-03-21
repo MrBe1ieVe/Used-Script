@@ -127,7 +127,7 @@ def copy_and_add_date(origin_path, post_path,filename):
         else:
             for line in open(openfile, encoding='utf-8'):
                 text.append(line)
-            text.insert(2, "date: " + create_date + '\n')
+            text.insert(3, "date: " + create_date + '\n')
         text = replace_pic_path_text(filename,text=text)
 
         writeback(post_path + filename,text)
@@ -188,8 +188,11 @@ for root, dirnames, filenames in os.walk(path_output):
             print(pic_name)
             print("Copyed!")
         else:
+            print()
+            print(filename)
+            print("Copyed!")
             continue
-        print()
+        
 
 print("Done!")
 time.sleep(2)
