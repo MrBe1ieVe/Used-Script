@@ -43,15 +43,15 @@ def writeback(filepath, text):
 
 # compare md5
 def compare_file_md5(origin_file, des_file):  
-    md5_hash = hashlib.md5()
+    #md5_hash = 
     # if(os.path.isfile(des_file)):# destination file doesnt exist
     #    return False
     with open(origin_file, 'r', encoding='utf-8') as ori, open(des_file, 'r', encoding='utf-8') as des:
         origin_blocks = ori.read(1024).encode('utf-8')
         des_blocks = des.read(1024).encode('utf-8')
         try:
-            origin_md5 = md5_hash.update(origin_blocks)
-            des_md5 = md5_hash.update(des_blocks)
+            origin_md5 = hashlib.md5(origin_blocks)
+            des_md5 = hashlib.md5(des_blocks)
             if(origin_md5 == des_md5):
                 return True
             else:
@@ -94,15 +94,15 @@ def replace_pic_path_text(filename,text):
     text.insert(0, "---\n")
     return tmp_text
 
-def copy_and_add_date(origin_path, post_path,filename):
+def copy_and_add_date_title(origin_path, post_path,filename):
     openfile = origin_path + filename
     temp = os.path.splitext(openfile)
-    file, type = temp
+    file, type = temp #dont change it
     if type == ".md":
         headline = False
-        head_exist = False
-        date_exist = False
-        line_num = False
+        title_exist = False # if title exist
+        date_exist = False  # if date exist
+        line_num = 0
         text = []
         create_date = shift_time(openfile)
         for line in open(openfile, encoding='utf-8'):
@@ -112,13 +112,11 @@ def copy_and_add_date(origin_path, post_path,filename):
                 continue
             if "date:" in line:
                 date_exist = True
-                break
-            if headline == 2:
-                head_exist = True
-                break
+            if "title:" in line:
+                title_exist = True
             if line_num == 10:
                 break
-        if date_exist:
+        if date_exist and title_exist:#日期和标题都正确
             shutil.copy2(path_output+filename, path_posts + filename)
             replace_pic_open_path(filename, path_posts + filename)
             print("Copyed!")
@@ -126,8 +124,13 @@ def copy_and_add_date(origin_path, post_path,filename):
             return
         else:
             for line in open(openfile, encoding='utf-8'):
+                if "isPublish:" in line:
+                    continue
                 text.append(line)
-            text.insert(3, "date: " + create_date + '\n')
+            if date_exist == False:
+                text.insert(3, "date: " + create_date + '\n')
+            if title_exist == False:
+                text.insert(1, "title: " + filename.replace(".md","") + '\n')
         text = replace_pic_path_text(filename,text=text)
 
         writeback(post_path + filename,text)
@@ -172,7 +175,7 @@ for root, dirnames, filenames in os.walk(path_output):
             continue
         # copy the pic and md to the _posts
         #shutil.copy2(path_output+filename, path_posts + filename)
-        copy_and_add_date(path_output, path_posts,filename)
+        copy_and_add_date_title(path_output, path_posts,filename)
         if pic_output_dic[filename]:
             #copy the pic to the _posts
             file_pic_folder = path_posts+"/" + filename[:-3]
@@ -196,5 +199,5 @@ for root, dirnames, filenames in os.walk(path_output):
 
 print("Done!")
 time.sleep(2)
-os.system(('cd {} && hexo clean && hexo gen && hexo deploy').format("\""+path_posts+"\""))#cd {} && hexo clean && hexo gen && hexo deploy
+#os.system(('cd {} && hexo clean && hexo gen && hexo deploy').format("\""+path_posts+"\""))#cd {} && hexo clean && hexo gen && hexo deploy
 
