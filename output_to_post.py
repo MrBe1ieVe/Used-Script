@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 import os
+from os import path
 import re
 import shutil
 import hashlib
@@ -19,9 +20,13 @@ pic_output_path = []
 file_output_name = []
 pic_output_dic = {}
 
+def rm_dir_content(file_path):
+    shutil.rmtree(path_posts)
+    os.mkdir(path_posts)
+    print("path: " + path_posts + "cleaned!")
+    time.sleep(2)
+
 # return the  earliest time stamp
-
-
 def shift_time(filename):
     # get the modify time or create time
     time_stamp_create = os.path.getctime(filename)
@@ -34,8 +39,6 @@ def shift_time(filename):
     return dateArray.strftime("%Y/%m/%d %H:%M:%S")
 
 # write back to the file
-
-
 def writeback(filepath, text):
     s = ''.join(text)
     with open(filepath, "w", encoding='utf-8',) as f:
@@ -71,7 +74,6 @@ def replace_pic_open_path(filename,path_posts_file):
             line = line.replace("../InsertPic/", filename[:-3]+"/")
             #print(line)
         text.append(line)
-    text.insert(0, "---\n")
     writeback(path_posts_file,text)
     
 #
@@ -116,7 +118,7 @@ def copy_and_add_date_title(origin_path, post_path,filename):
                 title_exist = True
             if line_num == 10:
                 break
-        if date_exist and title_exist:#日期和标题都正确
+        if date_exist and title_exist:# title and date correct
             shutil.copy2(path_output+filename, path_posts + filename)
             replace_pic_open_path(filename, path_posts + filename)
             print("Copyed!")
@@ -124,18 +126,25 @@ def copy_and_add_date_title(origin_path, post_path,filename):
             return
         else:
             for line in open(openfile, encoding='utf-8'):
+                # ignore my custom front matter
                 if "isPublish:" in line:
+                    continue
+                if re.match( r'^\# ', line):
                     continue
                 text.append(line)
             if date_exist == False:
                 text.insert(3, "date: " + create_date + '\n')
             if title_exist == False:
                 text.insert(1, "title: " + filename.replace(".md","") + '\n')
+            if headline == 1:
+                text.insert(0, "---\n")
         text = replace_pic_path_text(filename,text=text)
 
         writeback(post_path + filename,text)
         return
 
+# main now
+rm_dir_content(path_posts)# clean the _posts folder
 
 for root, dirnames, filenames in os.walk(path_output):
     for filename in filenames:
@@ -168,11 +177,11 @@ for root, dirnames, filenames in os.walk(path_output):
         file_equal_flag = 0
         print()
         print(filename)
-        if(os.path.isfile(path_posts + filename)):  # if destination file exit
-            file_equal_flag = compare_file_md5(
-                path_output+filename, path_posts + filename)
-        if(file_equal_flag):
-            continue
+        #if(os.path.isfile(path_posts + filename)):  # if destination file exit
+        #    file_equal_flag = compare_file_md5(
+        #        path_output+filename, path_posts + filename)
+        #if(file_equal_flag):
+        #    continue
         # copy the pic and md to the _posts
         #shutil.copy2(path_output+filename, path_posts + filename)
         copy_and_add_date_title(path_output, path_posts,filename)
@@ -196,8 +205,7 @@ for root, dirnames, filenames in os.walk(path_output):
             print("Copyed!")
             continue
         
-
 print("Done!")
 time.sleep(2)
-#os.system(('cd {} && hexo clean && hexo gen && hexo deploy').format("\""+path_posts+"\""))#cd {} && hexo clean && hexo gen && hexo deploy
+os.system(('cd {} && hexo clean && hexo gen && hexo deploy').format("\""+path_posts+"\""))#cd {} && hexo clean && hexo gen && hexo deploy
 
