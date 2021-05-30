@@ -11,19 +11,18 @@ from urllib.parse import unquote
 
 path_py = os.path.dirname(os.path.abspath(__file__))
 path_py = os.path.normpath(path_py)
-path_output = path_py[:path_py.index("Used script")] + "/Note Vault/OutPut/"#path_py[:path_py.index("Used script")] + "/Note Vault/OutPut/test/"#
-path_posts =path_py[:path_py.index(    "Used script")] + "/Blog/source/_posts/"  
-path_insertpic = path_py[:path_py.index(
-    "Used script")] + "/Note Vault/InsertPic/"
+path_output = path_py[:path_py.index("Used script")] + "/Note Vault/OutPut/"# relative path
+path_posts =path_py[:path_py.index("Used script")] + "/Blog/source/_posts/"  
+path_insertpic = path_py[:path_py.index("Used script")] + "/Note Vault/InsertPic/"
 file_output_path = []
 pic_output_path = []
 file_output_name = []
 pic_output_dic = {}
 
-def rm_dir_content(file_path):
+def rm_dir_content():
     shutil.rmtree(path_posts)
     os.mkdir(path_posts)
-    print("path: " + path_posts + "cleaned!")
+    print("path: " + path_posts + " cleaned!")
     time.sleep(2)
 
 # return the  earliest time stamp
