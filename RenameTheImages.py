@@ -22,22 +22,25 @@ def rename_the_images(path, filename):
     openfile = path + filename
     text = []
     Renamed = False
-    for line in open(openfile, encoding='utf-8'):
-        pic_line = re.search("\.\.\/InsertPic\/Pasted%20image", line)
-        if(pic_line):
-            
-            old_image_name = re.findall("Pasted%20image%20\d*\.png",line)[0]
-            new_image_name = re.findall("image%20\d*\.png",line)[0].replace("%20","-")# formate the name like typora pasted image name
-            line = line.replace(old_image_name, new_image_name)
-            print(line + "Replaced!\n")
-            old_image_name = old_image_name.replace("%20", " ")# formate the path
-            try:
-                os.rename(path_insertpic+old_image_name, path_insertpic+new_image_name)
-                Renamed = True
-            except:
-                raise "Rename Error!"
-            
-        text.append(line)
+    try:
+        for line in open(openfile, encoding='utf-8'):
+            pic_line = re.search("\.\.\/InsertPic\/Pasted%20image", line)
+            if(pic_line):
+
+                old_image_name = re.findall("Pasted%20image%20\d*\.png",line)[0]
+                new_image_name = re.findall("image%20\d*\.png",line)[0].replace("%20","-")# formate the name like typora pasted image name
+                line = line.replace(old_image_name, new_image_name)
+                print(line + "Replaced!\n")
+                old_image_name = old_image_name.replace("%20", " ")# formate the path
+                try:
+                    os.rename(path_insertpic+old_image_name, path_insertpic+new_image_name)
+                    Renamed = True
+                except:
+                    raise "Rename Error!"
+
+            text.append(line)
+    except:
+        raise filename + 'Error!'
     if(Renamed):
         writeback(path + filename, text)
     else:
@@ -50,8 +53,10 @@ def check_the_markdown():
         for filename in filenames:
             for line in open(os.path.join(path_output, filename), encoding='utf-8'):
                 if(line.find("isPublish: Yes") == 0):# My custom setting 
-                    rename_the_images(path_output, filename)
-
+                    try:
+                        rename_the_images(path_output, filename)
+                    except:
+                        raise filename+" Error!"
 
 def main():
     check_the_markdown()

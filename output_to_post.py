@@ -19,10 +19,10 @@ pic_output_path = []
 file_output_name = []
 pic_output_dic = {}
 
-def rm_dir_content():
-    shutil.rmtree(path_posts)
-    os.mkdir(path_posts)
-    print("path: " + path_posts + " cleaned!")
+def rm_dir_content(path):
+    shutil.rmtree(path)
+    os.mkdir(path)
+    print("path: " + path + " cleaned!")
     time.sleep(2)
 
 # return the  earliest time stamp
@@ -193,11 +193,12 @@ for root, dirnames, filenames in os.walk(path_output):
             for pic_name in pic_output_dic[filename]:
                 try:
                     shutil.copy2(path_insertpic+unquote(pic_name), file_pic_folder+"/"+unquote(pic_name))
+                    print(pic_name)
+                    print("Copyed!")
                 except:
                     continue
                     #raise "copy pic error!"
-            print(pic_name)
-            print("Copyed!")
+            
         else:
             print()
             print(filename)
