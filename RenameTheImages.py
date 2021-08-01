@@ -6,10 +6,12 @@ import time
 import re
 path_py = os.path.dirname(__file__)
 
+mac_ob_path = "../../Library/Mobile Documents/iCloud~md~obsidian/Documents/Note Vault"
+
 path_output = path_py[:path_py.index(
-    "Used script")] + "/Note Vault/OutPut/"  # relative path
+    "Used script")] + mac_ob_path + "/OutPut/"  # relative path
 path_insertpic = path_py[:path_py.index(
-    "Used script")] + "/Note Vault/InsertPic/"
+    "Used script")] + mac_ob_path + "/InsertPic/"
 
 # write back to the file
 def writeback(filepath, text):
