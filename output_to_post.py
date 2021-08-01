@@ -8,12 +8,17 @@ import datetime
 from typing import Text
 import time
 from urllib.parse import unquote
+import RenameTheImages
 
 path_py = os.path.dirname(os.path.abspath(__file__))
 path_py = os.path.normpath(path_py)
-path_output = path_py[:path_py.index("Used script")] + "/Note Vault/OutPut/"# relative path
-path_posts =path_py[:path_py.index("Used script")] + "/Blog/source/_posts/"  
-path_insertpic = path_py[:path_py.index("Used script")] + "/Note Vault/InsertPic/"
+
+mac_ob_path = "../../Library/Mobile Documents/iCloud~md~obsidian/Documents/Note Vault"
+
+path_output = path_py[:path_py.index("Used script")] + mac_ob_path + "/OutPut/"# relative path
+path_posts =path_py[:path_py.index("Used script")] + "Blog/source/_posts/"  
+path_insertpic = path_py[:path_py.index("Used script")] + mac_ob_path + "/InsertPic/"
+
 file_output_path = []
 pic_output_path = []
 file_output_name = []
@@ -143,6 +148,7 @@ def copy_and_add_date_title(origin_path, post_path,filename):
         return
 
 # main now
+RenameTheImages.main()
 rm_dir_content(path_posts)# clean the _posts folder
 
 for root, dirnames, filenames in os.walk(path_output):
@@ -207,5 +213,5 @@ for root, dirnames, filenames in os.walk(path_output):
         
 print("Done!")
 time.sleep(2)
-os.system(('cd {} && hexo clean && hexo gen && hexo deploy').format("\""+path_posts+"\""))#cd {} && hexo clean && hexo gen && hexo deploy
+os.system(('cd {} && hexo clean && hexo gen && echo "mrbelieve.tech" > public/CNAME && hexo deploy').format("\""+ "/Users/mrbelieve/Documents/OneDrive/Blog/" + "\""))#cd {} && hexo clean && hexo gen && hexo deploy
 

@@ -11,11 +11,13 @@ Not a good one -.-
 just insert the `isPublish: Yes\n`
 
 `run.py`
-the script i use to publish my note and update my blog
+the script I use to publish my note and update my blog
 
 `output_to_post.py`
 copy the note from my `Note Vault/OutPut` to hexo `_posts`, with the pic and update note's pic path
+> Note that 'Note Vault' is in the same 
 
 `ReNameTheImages.py`
-rename the image in the md file inorder to make hexo identiry it.
+rename the image in the md file in order to let hexo identify it.
 
+``
